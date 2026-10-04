@@ -1,1 +1,1 @@
-# WeatherForecastAPI
+# WeatherForecasterAPI
