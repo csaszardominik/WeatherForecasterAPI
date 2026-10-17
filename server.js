@@ -41,7 +41,7 @@ app.post('/user/register', (req, res) => {
         return res.status(400).json({ error: 'Password do not match' });
     }
 
-    if (passwd.match(pwdRegExp)) {
+    if (!passwd.match(pwdRegExp)) {
         return res.status(400).json({ error: 'The new password is too weak' });
     }
 
@@ -96,6 +96,23 @@ app.post('/user/login', (req, res) => {
             }
             return res.status(200).json({ message: 'You are successfully logged in!', loggedUser });
         })
+    })
+})
+
+// get one user
+app.get('/users/:id', (req, res) => {
+    const uid = req.params.uid;
+
+    pool.query('SELECT ID, name, email, role, status FROM users WHERE ID = ? ', [uid], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Database query error' });
+        }
+
+        if (results.length > 0) {
+            return res.status(400).json({ error: 'This user cannot be found!' });
+        }
+
+        return res.status(200).json(results[0]);
     })
 })
 
@@ -225,4 +242,84 @@ app.get('/admin/:users', (req, res) => {
             }
         })
     })
+})
+
+// forecaster for admin
+app.get('/admin/weather', (req, res) => {
+    pool.query('SELECT * FROM weather_forecasts ORDRE BY date DESC', (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Database query error' });
+        }
+
+        return res.status(200).json(results);
+    })
+})
+
+// forecast delete
+
+app.delete('/admin/weather/:id', (req, res) => {
+    const uid = req.params.uid;
+
+    pool.query('DELETE FROM weather_forecasts WHERE ID = ?', [uid], ( error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Database query error' });
+        }
+
+        if(results.affectedRows === 0){
+            return res.status(404).json({error: 'Forecast cannot be found!'});
+        }
+
+        return res.status(200).json({message: 'Forecast deleted'});
+    })
+})
+
+// WEATHER
+// -------------------------
+
+// weather forecasts
+app.get('/weather', (req, res) => {
+    pool.query('SELECT ID, date, location, temp_min, temp_max, weather_type FROM weather_forecasts ORDER BY date ASC', (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Database query error' });
+        }
+
+        return res.status(200).json(results);
+    })
+})
+
+// weather forecasts for users
+
+app.get('/weather/:id', (req, res) => {
+    const uid = req.params.uid;
+
+    if(!uid){
+        return res.status(401).json({error: 'Login in to check the weather forecasts'});
+    }
+
+    pool.query('SELECT ID, status, FROM users WHERE ID = ?', [uid], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Database query error' });
+        }
+
+        if (results.length > 0 || results[0].status !== 'Allowed') {
+            return res.status(400).json({ error: 'You cannot see this' });
+        }
+
+        pool.query('SELECT * FROM weather_forecasts WHERE ID = ?', [uid], (error2, results2) => {
+            if (error2) {
+                return res.status(500).json({ error: 'Database query error' });
+            }
+
+            if (results2.length > 0) {
+                return res.status(400).json({ error: 'Forecaster cannot be found' });
+            }
+
+            return res.status(200).json(results2[0])
+        })
+    });
+})
+
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+
 })
