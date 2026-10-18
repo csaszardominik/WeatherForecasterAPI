@@ -1,11 +1,343 @@
 @host = http://localhost:3000
+@userId = 1
+@adminId = 1
+@forecastId = 1
+@userEmail = resttest@example.com
+@userPassword = TestPass123!
 
+### asd
 POST {{host}}/user/register
 Content-Type: application/json
 
 {
     "name": "Asd Dsa",
-    "email": "asd@gmail.com",
-    "passwd": "P@ssword1",
-    "confirm": "P@ssword1"
+    "email": "asdaa@gmail.com",
+    "passwd": "Password1?",
+    "confirm": "Password1?"
 }
+
+### login
+POST {{host}}/user/login
+Content-Type: application/json
+
+{
+     "email": "asdaa@gmail.com",
+      "passwd": "Password1?1"
+}
+
+    # "email": "asdaa@gmail.com",
+    #  "passwd": "Password1?"
+
+
+    # "email": "adminn@gmail.com",
+    # "passwd": "adminn123"
+
+### GET ONE USER
+GET {{host}}/user/1
+Content-Type: application/json
+
+### password upd
+POST {{host}}/user/11/passmod
+Content-Type: application/json
+
+{
+    "oldpass": "Password1?",
+    "newpass": "Password1?1",
+    "confirm": "Password1?1"
+}
+
+### email, name mod
+POST {{host}}/user/11/
+Content-Type: application/json
+
+{
+    
+}
+
+
+
+
+
+
+
+###  Get API welcome message
+GET {{host}}/
+
+
+### Register user with missing fields
+POST {{host}}/user/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "missing@example.com"
+}
+
+### Register user with mismatched passwords
+POST {{host}}/user/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "mismatch@example.com",
+  "passwd": "TestPass123!",
+  "confirm": "OtherPass123!"
+}
+
+### 5. Register user with a weak password
+POST {{host}}/user/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "weakpass@example.com",
+  "passwd": "password",
+  "confirm": "password"
+}
+
+### 6. Log in with valid credentials
+POST {{host}}/user/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "passwd": "{{userPassword}}"
+}
+
+### 7. Log in with an incorrect password
+POST {{host}}/user/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "passwd": "WrongPass123!"
+}
+
+### 8. Log in with missing fields
+POST {{host}}/user/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}"
+}
+
+### 9. Log in with a nonexistent user
+POST {{host}}/user/login
+Content-Type: application/json
+
+{
+  "email": "nonexistent@example.com",
+  "passwd": "TestPass123!"
+}
+
+### 10. Get user profile
+GET {{host}}/user/{{userId}}
+
+### 11. Get profile of a nonexistent user
+GET {{host}}/user/999999
+
+### 12. Update user profile
+PATCH {{host}}/user/{{userId}}
+Content-Type: application/json
+
+{
+  "username": "Updated REST User",
+  "email": "updated-resttest@example.com",
+  "loggedUserID": "{{userId}}"
+}
+
+### 13. Update profile with missing fields
+PATCH {{host}}/user/{{userId}}
+Content-Type: application/json
+
+{
+  "username": "Updated User",
+  "loggedUserID": "{{userId}}"
+}
+
+### 14. Update another user's profile without permission
+PATCH {{host}}/user/{{userId}}
+Content-Type: application/json
+
+{
+  "username": "Unauthorized User",
+  "email": "unauthorized@example.com",
+  "loggedUserID": "999999"
+}
+
+### 15. Update profile using an email already in use
+PATCH {{host}}/user/{{userId}}
+Content-Type: application/json
+
+{
+  "username": "Another Name",
+  "email": "existing-user@example.com",
+  "loggedUserID": "{{userId}}"
+}
+
+### 16. Change user password
+POST {{host}}/user/{{userId}}/passmod
+Content-Type: application/json
+
+{
+  "oldpass": "OldPass123!",
+  "newpass": "NewPass123!",
+  "confirm": "NewPass123!"
+}
+
+### 17. Change password with missing fields
+POST {{host}}/user/{{userId}}/passmod
+Content-Type: application/json
+
+{
+  "oldpass": "OldPass123!"
+}
+
+### 18. Change password with mismatched confirmation
+POST {{host}}/user/{{userId}}/passmod
+Content-Type: application/json
+
+{
+  "oldpass": "OldPass123!",
+  "newpass": "NewPass123!",
+  "confirm": "Different123!"
+}
+
+### 19. Change password with an incorrect old password
+POST {{host}}/user/{{userId}}/passmod
+Content-Type: application/json
+
+{
+  "oldpass": "WrongOld123!",
+  "newpass": "NewPass123!",
+  "confirm": "NewPass123!"
+}
+
+### 20. Delete a test user
+DELETE {{host}}/user/{{userId}}
+Content-Type: application/json
+
+{
+  "luid": "{{userId}}"
+}
+
+### 21. Admin: Get all users
+POST {{host}}/admin/users
+Content-Type: application/json
+
+{
+  "luid": "{{adminId}}"
+}
+
+### 22. Admin: Get users with a nonexistent admin ID
+POST {{host}}/admin/users
+Content-Type: application/json
+
+{
+  "luid": "999999"
+}
+
+### 23. Admin: Toggle a user's active status
+PATCH {{host}}/admin/status
+Content-Type: application/json
+
+{
+  "uid": "{{userId}}",
+  "luid": "{{adminId}}"
+}
+
+### 24. Admin: Toggle user status with a missing ID
+PATCH {{host}}/admin/status
+Content-Type: application/json
+
+{
+  "uid": "{{userId}}"
+}
+
+### 25. Get public weather forecasts
+GET {{host}}/weather
+
+### 26. Get detailed weather forecast without a user ID
+GET {{host}}/weather/{{forecastId}}
+
+### 27. Get detailed weather forecast with a user ID
+GET {{host}}/weather/{{forecastId}}?uid={{userId}}
+
+### 28. Admin: Get all weather forecasts
+GET {{host}}/admin/weather
+
+### 29. Admin: Create a weather forecast
+POST {{host}}/admin/weather
+Content-Type: application/json
+
+{
+  "date": "2026-10-20",
+  "location": "Budapest",
+  "temp_min": 10,
+  "temp_max": 19,
+  "weather_type": "Cloudy",
+  "precipitation": 2,
+  "precipitation_probability": 30,
+  "wind_speed": 12,
+  "wind_direction": "N",
+  "humidity": 65,
+  "pressure": 1013,
+  "uv_index": 2
+}
+
+### 30. Admin: Create forecast with missing required fields
+POST {{host}}/admin/weather
+Content-Type: application/json
+
+{
+  "location": "Budapest",
+  "temp_min": 10,
+  "temp_max": 19,
+  "weather_type": "Cloudy"
+}
+
+### 31. Admin: Update a weather forecast
+PUT {{host}}/admin/weather/{{forecastId}}
+Content-Type: application/json
+
+{
+  "date": "2026-10-21",
+  "location": "Szeged",
+  "temp_min": 12,
+  "temp_max": 22,
+  "weather_type": "Sunny",
+  "precipitation": 0,
+  "precipitation_probability": 5,
+  "wind_speed": 8,
+  "wind_direction": "E",
+  "humidity": 50,
+  "pressure": 1015,
+  "uv_index": 4
+}
+
+### 32. Admin: Update forecast with missing required fields
+PUT {{host}}/admin/weather/{{forecastId}}
+Content-Type: application/json
+
+{
+  "location": "Szeged",
+  "temp_min": 12
+}
+
+### 33. Admin: Update a nonexistent forecast
+PUT {{host}}/admin/weather/999999
+Content-Type: application/json
+
+{
+  "date": "2026-10-21",
+  "location": "Szeged",
+  "temp_min": 12,
+  "temp_max": 22,
+  "weather_type": "Sunny"
+}
+
+### 34. Admin: Delete a weather forecast
+DELETE {{host}}/admin/weather/{{forecastId}}
+
+### 35. Admin: Delete a nonexistent forecast
+DELETE {{host}}/admin/weather/999999
